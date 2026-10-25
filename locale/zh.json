@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "会话完成通知",
+    "description": "DSH 会话每轮结束时，在 Windows 11 右下角弹出系统通知（类似 Claude Code / Codex 的完成提示）。"
+  }
+}
