@@ -1,0 +1,21 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build / package artifacts
+*.tgz
+dist/
+coverage/
+
+# Logs and local diagnostics
+*.log
+logs/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Local workspace evidence (not part of the plugin)
+_scratch/
