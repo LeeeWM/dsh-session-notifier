@@ -1,0 +1,70 @@
+{
+  "name": "dsh-session-notifier",
+  "version": "0.1.0",
+  "description": "Windows 11 toast notifications when a DeepSeek Harness session turn finishes, with focus-aware suppression and a no-dependency PowerShell notifier.",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "notify.ps1",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "docs/*.png",
+    "test/*.mjs",
+    "README.md",
+    "README.en.md",
+    "CHANGELOG.md",
+    "SECURITY.md",
+    "LICENSE",
+    ".gitignore"
+  ],
+  "scripts": {
+    "test": "node test/mock-apply.mjs",
+    "test:mock": "node test/mock-apply.mjs",
+    "test:live": "node test/live-smoke.mjs",
+    "check": "node --check index.js"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "dsh-plugin",
+    "notification",
+    "notify",
+    "toast",
+    "windows",
+    "windows-11",
+    "cordis"
+  ],
+  "author": {
+    "name": "LeeeWM",
+    "url": "https://github.com/LeeeWM"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LeeeWM/dsh-session-notifier.git"
+  },
+  "homepage": "https://github.com/LeeeWM/dsh-session-notifier#readme",
+  "bugs": {
+    "url": "https://github.com/LeeeWM/dsh-session-notifier/issues"
+  },
+  "dsh": {
+    "compatibility": {
+      "dshReleases": {
+        "0.2.1-rc.3": "compatible"
+      }
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "license": "MIT"
+}
