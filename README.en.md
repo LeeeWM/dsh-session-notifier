@@ -9,10 +9,6 @@
 
 A DeepSeek Harness host plugin that shows a **Windows 11 toast notification when a session turn finishes** — similar to Claude Code / Codex completion notifications. By default it only notifies when DSH is not in the foreground, so you are not interrupted while watching a response.
 
-![Notification](docs/toast-plugin-live.png)
-
-> Captured on 2026-10-25 through the real plugin code path (`apply` → `turn/end` → `notify.ps1`).
-
 ## Why
 
 Long agent runs are common. You switch to another app, the turn finishes, and nothing tells you. This plugin turns DSH's `turn/end` event into a native Windows notification with the session title, duration and turn number.
@@ -143,7 +139,6 @@ DSH session ──turn/start──▶ remember start time, cancel pending toast
 | `icon.svg` | Plugin icon |
 | `test/mock-apply.mjs` | Offline mock-host tests (no notification) |
 | `test/live-smoke.mjs` | Manual test that shows one real toast |
-| `docs/toast-*.png` | Verification screenshots |
 | `README.md` / `README.en.md` | Chinese / English docs |
 | `CHANGELOG.md` / `SECURITY.md` / `LICENSE` | Release history, security policy, MIT license |
 

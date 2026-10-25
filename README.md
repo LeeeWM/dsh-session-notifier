@@ -9,10 +9,6 @@
 
 DSH 宿主侧插件：**每当一轮会话回复结束，在 Windows 11 右下角弹出系统通知**，作用类似 Claude Code / Codex 的完成提示。默认只有 DSH 不在前台时才提示，避免盯着屏幕时被打扰。
 
-![通知效果](docs/toast-plugin-live.png)
-
-> 上图为插件真实代码路径（`apply` → `turn/end` → `notify.ps1`）弹出的通知，2026-10-25 在本机实测。
-
 ## 为什么需要它
 
 长任务跑起来以后，人通常会切到别的应用；DSH 这一轮结束、等你下一步输入时，没有任何提示。这个插件把 DSH 的 `turn/end` 事件变成一条 Windows 原生通知，带上会话标题、用时和轮次。
@@ -150,7 +146,6 @@ DSH session ──turn/start──▶ 记录开始时间，取消待发通知
 | `icon.svg` | 插件图标 |
 | `test/mock-apply.mjs` | 离线 mock 宿主测试（不弹通知） |
 | `test/live-smoke.mjs` | 真实弹一条通知的联调脚本 |
-| `docs/toast-*.png` | 实测截图证据 |
 | `README.md` / `README.en.md` | 中文 / English 文档 |
 | `CHANGELOG.md` / `SECURITY.md` / `LICENSE` | 变更记录 / 安全策略 / MIT 许可 |
 
