@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Session Completion Notifier",
+    "description": "Shows a Windows 11 toast notification when a DSH session turn finishes, like Claude Code / Codex completion notifications."
+  }
+}
