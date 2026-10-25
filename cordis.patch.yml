@@ -1,0 +1,7 @@
+# One row per plugin. `name` MUST equal package.json "name".
+# `id` is the stable identity used by overrides and toggles.
+- insert:
+    - id: dsh-session-notifier
+      name: 'dsh-session-notifier'
+      # Every key is optional; omit `config` to use the plugin defaults.
+      # config: {}
