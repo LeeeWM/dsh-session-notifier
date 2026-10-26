@@ -1,7 +1,7 @@
 // Manual smoke test: sends a REAL Windows notification through the plugin code
 // path (fake Cordis context + synthetic session events -> notify.ps1).
 //
-// Run: node plugins/dsh-session-notifier/test/live-smoke.mjs
+// Run: node plugins/dsh-session-toast/test/live-smoke.mjs
 // It pops one toast. If the DSH window has focus, the default onlyWhenUnfocused
 // would suppress it, so this harness pins onlyWhenUnfocused:false.
 import { join } from 'node:path'
@@ -9,11 +9,11 @@ import { tmpdir } from 'node:os'
 import { apply } from '../index.js'
 
 if (process.platform !== 'win32') {
-  console.error(`SKIP: dsh-session-notifier is Windows-only (running on ${process.platform})`)
+  console.error(`SKIP: dsh-session-toast is Windows-only (running on ${process.platform})`)
   process.exit(0)
 }
 
-const LOG_FILE = join(tmpdir(), 'dsh-session-notifier-live.log')
+const LOG_FILE = join(tmpdir(), 'dsh-session-toast-live.log')
 
 const listeners = new Map()
 const disposers = []

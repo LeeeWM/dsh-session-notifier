@@ -1,4 +1,4 @@
-# dsh-session-notifier
+# dsh-session-toast
 
 [中文](README.md) | **English**
 
@@ -43,11 +43,13 @@ The plugin is inactive on non-Windows platforms.
 
 ## Install
 
+> ⚠️ Install under the name **`dsh-session-toast`** only. The npm package `dsh-session-notifier` belongs to a different author and is unrelated to this project.
+
 ### From GitHub (recommended)
 
 ```powershell
-dsh plugin --profile <profile> add github:LeeeWM/dsh-session-notifier
-dsh --profile <profile> --dump-config | Select-String "dsh-session-notifier"
+dsh plugin --profile <profile> add github:LeeeWM/dsh-session-toast
+dsh --profile <profile> --dump-config | Select-String "dsh-session-toast"
 ```
 
 Use this for a non-desktop profile (`web`, `headless`, etc.).
@@ -55,7 +57,7 @@ Use this for a non-desktop profile (`web`, `headless`, etc.).
 For the Desktop profile, install through the UI: **Plugins → Add plugin → Install a third-party plugin**, pointing at a local clone of this repository. The Desktop profile is managed by Electron and rejects CLI installs by design.
 
 ```powershell
-git clone https://github.com/LeeeWM/dsh-session-notifier.git
+git clone https://github.com/LeeeWM/dsh-session-toast.git
 ```
 
 ### Local development
@@ -63,10 +65,16 @@ git clone https://github.com/LeeeWM/dsh-session-notifier.git
 ```powershell
 # Desktop: Plugins → Add plugin → third-party plugin → absolute plugin directory
 # Non-desktop:
-dsh plugin --profile <profile> add "C:\path\to\dsh-session-notifier"
+dsh plugin --profile <profile> add "C:\path\to\dsh-session-toast"
 ```
 
 Local directory installs are `link:` installs. After editing `index.js` or `notify.ps1`, disable and re-enable the plugin (or restart DSH) to load the new module generation.
+
+> **Renamed in v0.2.0.** 0.1.x shipped as `dsh-session-notifier`, but that npm name is taken by an unrelated package from another author (a web client + WSL notifier), so installing "by name" pulled the wrong plugin. Since v0.2.0 the package name, plugin row id and GitHub repository are all **`dsh-session-toast`**. To upgrade:
+>
+> 1. **Remove** the old `dsh-session-notifier` in Plugins, including the unrelated npm `1.x` package if it was installed by name;
+> 2. install `dsh-session-toast` as described above;
+> 3. click **Install → Enable now** and confirm `# == dsh-session-toast` shows up in `--dump-config`.
 
 ## Configuration
 
@@ -95,8 +103,8 @@ All keys are optional. Overrides are **whole-row replacements** — repeat every
 In the machine-level user layer `$DSH_HOME/cordis.patch.yml`:
 
 ```yaml
-- id: dsh-session-notifier
-  name: dsh-session-notifier
+- id: dsh-session-toast
+  name: dsh-session-toast
   config:
     enabled: true
     notifyOn: completed-and-error
@@ -106,7 +114,7 @@ In the machine-level user layer `$DSH_HOME/cordis.patch.yml`:
     debounceMs: 1200
     notifySubagents: false
     mode: auto
-    logFile: 'C:\Users\you\.dsh\logs\dsh-session-notifier.log'
+    logFile: 'C:\Users\you\.dsh\logs\dsh-session-toast.log'
 ```
 
 > Do not hand-edit `~/.dsh/profiles/desktop/package.json` or its `cordis.patch.yml`; the Desktop profile is managed by the plugin manager. Use `--patch <overlay.yml>` for temporary development overlays.
@@ -133,7 +141,7 @@ DSH session ──turn/start──▶ remember start time, cancel pending toast
 | --- | --- |
 | `index.js` | Host plugin: config, event listeners, debounce, notifier spawn |
 | `notify.ps1` | Windows delivery: foreground check, WinRT toast, balloon fallback, exit codes |
-| `cordis.patch.yml` | Inserts the plugin row (`id: dsh-session-notifier`, `name: dsh-session-notifier`) |
+| `cordis.patch.yml` | Inserts the plugin row (`id: dsh-session-toast`, `name: dsh-session-toast`) |
 | `package.json` | `dsh.bundle.patch`, `dsh.compatibility`, `files` whitelist, scripts |
 | `locale/{zh,en}.json` | Plugins page title/description |
 | `icon.svg` | Plugin icon |
@@ -167,13 +175,14 @@ The mock suite covers listener registration, disabled mode, title/duration/turn 
 | Symptom | Fix |
 | --- | --- |
 | No notification | Check Windows Settings → System → Notifications / Focus Assist; set `onlyWhenUnfocused: false`; set `logFile` and inspect the notifier log |
+| Installed but nothing ever fires (check this first) | Confirm the plugin is actually **enabled**: `dsh --profile <profile> --dump-config` must contain a `# == dsh-session-toast` layer, and the desktop Plugins page must show Enabled. A package that is only a dependency in `package.json` while missing from `dsh.profile.bundles` is never loaded, so it can never notify |
 | Nothing while DSH is focused | Intended default; use `onlyWhenUnfocused: false` |
 | Source label says "Windows PowerShell" | The toast borrows the registered PowerShell AUMID; register a custom AUMID and set `aumid` if you need a different label |
 | Subagent turns do not notify | `notifySubagents` defaults to `false` |
 | Too many notifications | Increase `minTurnDurationMs` / `debounceMs`, or use `notifyOn: 'completed'` |
-| Plugin did not load | Startup log should contain `[dsh-session-notifier] loaded (…)` |
+| Plugin did not load | Startup log should contain `[dsh-session-toast] loaded (…)` |
 
-Set `DSH_SESSION_NOTIFIER_DEBUG=1` to print the exact payload and PowerShell PID to stderr.
+Set `DSH_SESSION_TOAST_DEBUG=1` (`DSH_SESSION_NOTIFIER_DEBUG=1` from 0.1.x still works) to make DSH's console print where each `turn/end` went — queued, or skipped by which rule — plus the exact payload, the PowerShell PID and `notify.ps1`'s own `DELIVERED` / `SKIPPED reason=…` lines. That is the quickest way to tell "not loaded" from "filtered" from "suppressed by the focus policy".
 
 ## Known limitations
 
@@ -193,13 +202,13 @@ Set `DSH_SESSION_NOTIFIER_DEBUG=1` to print the exact payload and PowerShell PID
 
 ## Uninstall
 
-Desktop: **Plugins → dsh-session-notifier → Remove**.
+Desktop: **Plugins → dsh-session-toast → Remove**.
 
 Other profiles:
 
 ```powershell
-dsh plugin --profile <profile> remove dsh-session-notifier
-dsh --profile <profile> --dump-config | Select-String "dsh-session-notifier"
+dsh plugin --profile <profile> remove dsh-session-toast
+dsh --profile <profile> --dump-config | Select-String "dsh-session-toast"
 ```
 
 ## License

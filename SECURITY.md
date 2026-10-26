@@ -4,12 +4,13 @@
 
 | Version | Supported |
 | --- | --- |
-| 0.1.x | yes |
+| 0.2.x | yes |
+| 0.1.x | yes (old package name, `dsh-session-notifier`) |
 
 ## Reporting a vulnerability
 
 Please report security issues **privately** through GitHub's
-[Security Advisories](https://github.com/LeeeWM/dsh-session-notifier/security/advisories/new)
+[Security Advisories](https://github.com/LeeeWM/dsh-session-toast/security/advisories/new)
 for this repository. Do not open a public issue for an unfixed vulnerability.
 
 Include:
@@ -22,7 +23,7 @@ Include:
 
 ## Scope
 
-`dsh-session-notifier` runs in the DSH host process and starts a local
+`dsh-session-toast` runs in the DSH host process and starts a local
 `powershell.exe` child process to display notifications. In scope:
 
 - shell/argument injection through session titles, working directories, or

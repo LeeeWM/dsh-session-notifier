@@ -15,10 +15,23 @@ import { existsSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-export const name = 'dsh-session-notifier'
+export const name = 'dsh-session-toast'
 
-const LOG_PREFIX = '[dsh-session-notifier]'
+const LOG_PREFIX = '[dsh-session-toast]'
 const NOTIFIER_SCRIPT = fileURLToPath(new URL('./notify.ps1', import.meta.url))
+
+/**
+ * `DSH_SESSION_TOAST_DEBUG=1` turns on the diagnostic channel: delivery payloads,
+ * spawn results, skip reasons and notify.ps1's own stderr are echoed to DSH's
+ * console. The pre-0.2 variable name is still honoured.
+ */
+const DEBUG =
+  process.env.DSH_SESSION_TOAST_DEBUG === '1' || process.env.DSH_SESSION_NOTIFIER_DEBUG === '1'
+
+/** Diagnostic line: stderr only, never stdout, and only when debug is on. */
+function debug(message) {
+  if (DEBUG) console.error(`${LOG_PREFIX} ${message}`)
+}
 
 const DEFAULT_CONFIG = Object.freeze({
   /** Master switch; `false` makes `apply` a no-op. */
@@ -283,9 +296,7 @@ export function apply(ctx, rawConfig) {
   }
 
   function deliver(payload) {
-    if (process.env.DSH_SESSION_NOTIFIER_DEBUG === '1') {
-      console.error(`${LOG_PREFIX} deliver: ${JSON.stringify(payload)}`)
-    }
+    debug(`deliver: ${JSON.stringify(payload)}`)
     if (config.dryRun) {
       console.log(`${LOG_PREFIX} dry-run payload: ${JSON.stringify(payload)}`)
       return
@@ -313,16 +324,28 @@ export function apply(ctx, rawConfig) {
     try {
       // Keep the child attached to DSH's process tree: on Windows a DETACHED
       // console process exits before running the script, so detached must stay
-      // false. stdio is ignored and the child is unref'd, so it never blocks.
-      child = spawn(powershell, args, { windowsHide: true, stdio: 'ignore', detached: false })
+      // false. stdio is ignored and the child is unref'd, so it never blocks;
+      // in debug mode stderr is piped so notify.ps1's SKIPPED/DELIVERED lines
+      // become visible in DSH's console.
+      child = spawn(powershell, args, {
+        windowsHide: true,
+        stdio: DEBUG ? ['ignore', 'ignore', 'pipe'] : 'ignore',
+        detached: false,
+      })
     } catch (error) {
       console.warn(`${LOG_PREFIX} could not start notifier: ${error instanceof Error ? error.message : String(error)}`)
       return
     }
     children.add(child)
-    if (process.env.DSH_SESSION_NOTIFIER_DEBUG === '1') {
-      console.error(`${LOG_PREFIX} spawned powershell pid=${child.pid} script=${NOTIFIER_SCRIPT}`)
+    if (DEBUG) {
+      child.stderr?.setEncoding('utf8')
+      child.stderr?.on('data', (chunk) => {
+        for (const line of String(chunk).split(/\r?\n/u)) {
+          if (line.trim().length > 0) console.error(`${LOG_PREFIX} notify.ps1: ${line.trim()}`)
+        }
+      })
     }
+    debug(`spawned powershell pid=${child.pid} script=${NOTIFIER_SCRIPT}`)
     const killTimer = setTimeout(() => {
       try {
         child.kill()
@@ -364,16 +387,29 @@ export function apply(ctx, rawConfig) {
     const reason = event?.data?.reason
     const reasonKind = typeof reason?.kind === 'string' ? reason.kind : 'completed'
     const turn = event?.data?.turn
-    if (typeof turn === 'number' && state.lastEndedTurn === turn) return
+    if (typeof turn === 'number' && state.lastEndedTurn === turn) {
+      debug(`turn/end ${turn} (${reasonKind}) already handled, ignoring duplicate`)
+      return
+    }
 
     const isSubagent = session?.header?.origin === 'subagent' || (typeof session?.header?.parentSession === 'string' && session.header.parentSession.length > 0)
-    if (isSubagent && !config.notifySubagents) return
-    if (!shouldNotify(config, reasonKind)) return
+    if (isSubagent && !config.notifySubagents) {
+      debug(`turn/end ${String(turn)} (${reasonKind}) skipped: subagent session and notifySubagents=false`)
+      return
+    }
+    if (!shouldNotify(config, reasonKind)) {
+      debug(`turn/end ${String(turn)} skipped: reason "${reasonKind}" not selected by notifyOn=${config.notifyOn}`)
+      return
+    }
 
     const eventTime = typeof event?.time === 'number' ? event.time : Date.now()
-    if (typeof state.startedAt === 'number' && eventTime - state.startedAt < config.minTurnDurationMs) return
+    if (typeof state.startedAt === 'number' && eventTime - state.startedAt < config.minTurnDurationMs) {
+      debug(`turn/end ${String(turn)} skipped: turn shorter than minTurnDurationMs=${config.minTurnDurationMs}`)
+      return
+    }
 
     state.lastEndedTurn = typeof turn === 'number' ? turn : null
+    debug(`turn/end ${String(turn)} (${reasonKind}) queued, delivering after ${config.debounceMs}ms`)
     scheduleNotification(session, state, event, reasonKind)
   }
 
@@ -421,10 +457,10 @@ export function apply(ctx, rawConfig) {
       }
       children.clear()
     },
-    'dsh-session-notifier timers and notifier processes',
+    'dsh-session-toast timers and notifier processes',
   )
 
   console.log(
-    `${LOG_PREFIX} loaded (notifyOn=${config.notifyOn}, onlyWhenUnfocused=${config.onlyWhenUnfocused}, dryRun=${config.dryRun})`,
+    `${LOG_PREFIX} loaded (notifyOn=${config.notifyOn}, onlyWhenUnfocused=${config.onlyWhenUnfocused}, mode=${config.mode}, dryRun=${config.dryRun}${DEBUG ? ', debug' : ''})`,
   )
 }

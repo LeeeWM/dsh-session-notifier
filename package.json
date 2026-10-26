@@ -1,6 +1,6 @@
 {
-  "name": "dsh-session-notifier",
-  "version": "0.1.0",
+  "name": "dsh-session-toast",
+  "version": "0.2.0",
   "description": "Windows 11 toast notifications when a DeepSeek Harness session turn finishes, with focus-aware suppression and a no-dependency PowerShell notifier.",
   "type": "module",
   "main": "index.js",
@@ -46,11 +46,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/LeeeWM/dsh-session-notifier.git"
+    "url": "git+https://github.com/LeeeWM/dsh-session-toast.git"
   },
-  "homepage": "https://github.com/LeeeWM/dsh-session-notifier#readme",
+  "homepage": "https://github.com/LeeeWM/dsh-session-toast#readme",
   "bugs": {
-    "url": "https://github.com/LeeeWM/dsh-session-notifier/issues"
+    "url": "https://github.com/LeeeWM/dsh-session-toast/issues"
   },
   "dsh": {
     "compatibility": {

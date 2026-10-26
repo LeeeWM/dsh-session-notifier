@@ -3,12 +3,12 @@
 // subagent filtering, duplicate suppression, and teardown without a DSH host
 // and without actually showing Windows notifications (`dryRun: true`).
 //
-// Run: node plugins/dsh-session-notifier/test/mock-apply.mjs
+// Run: node plugins/dsh-session-toast/test/mock-apply.mjs
 import assert from 'node:assert/strict'
 import { apply, name } from '../index.js'
 
 if (process.platform !== 'win32') {
-  console.log(`SKIP: dsh-session-notifier is Windows-only (running on ${process.platform})`)
+  console.log(`SKIP: dsh-session-toast is Windows-only (running on ${process.platform})`)
   process.exit(0)
 }
 

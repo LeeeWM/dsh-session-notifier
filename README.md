@@ -1,4 +1,4 @@
-# dsh-session-notifier
+# dsh-session-toast
 
 **中文** | [English](README.en.md)
 
@@ -44,11 +44,13 @@ DSH 宿主侧插件：**每当一轮会话回复结束，在 Windows 11 右下�
 
 ## 安装
 
+> ⚠️ 请只按 **`dsh-session-toast`** 这个名字安装。npm 上的 `dsh-session-notifier` 属于另一位作者，与本项目无关。
+
 ### 从 GitHub 安装（非桌面 profile，推荐）
 
 ```powershell
-dsh plugin --profile <profile> add github:LeeeWM/dsh-session-notifier
-dsh --profile <profile> --dump-config | Select-String "dsh-session-notifier"
+dsh plugin --profile <profile> add github:LeeeWM/dsh-session-toast
+dsh --profile <profile> --dump-config | Select-String "dsh-session-toast"
 ```
 
 适用于 `web` / `headless` / `tui` 等非 desktop profile。
@@ -57,23 +59,27 @@ dsh --profile <profile> --dump-config | Select-String "dsh-session-notifier"
 
 Desktop profile 由 Electron 独占管理，CLI 会拒绝安装。请走 UI：
 
-1. `git clone https://github.com/LeeeWM/dsh-session-notifier.git`
+1. `git clone https://github.com/LeeeWM/dsh-session-toast.git`
 2. **Plugins → Add plugin → Install a third-party plugin**；
 3. 填克隆目录的绝对路径 → **Install → Enable now**。
 
-> 如果你的 Plugins UI 支持直接填 GitHub 包名，也可以尝试 `github:LeeeWM/dsh-session-notifier`；本仓库文档以“目录安装”为准。
+> 如果你的 Plugins UI 支持直接填 GitHub 包名，也可以尝试 `github:LeeeWM/dsh-session-toast`；本仓库文档以“目录安装”为准。
 
 ### 本地开发
 
 ```powershell
 # 桌面端：Plugins → Add plugin → 第三方插件 → 填插件目录绝对路径
 # 非桌面 profile：
-dsh plugin --profile <profile> add "C:\path\to\dsh-session-notifier"
+dsh plugin --profile <profile> add "C:\path\to\dsh-session-toast"
 ```
 
 本地目录是 `link:` 安装：改完 `index.js` / `notify.ps1` 后，需要禁用再启用插件（或重启 DSH）才加载新模块。
 
-> **从旧包名升级**：早期版本包名是 `@local/dsh-session-notifier`。本版本已改为公开包名 `dsh-session-notifier`；请先在 Plugins 里 Remove 旧插件，再按上面的方式重新安装。
+> **名字变更（v0.2.0）**：0.1.x 叫 `dsh-session-notifier`，但 npm 上这个名字已被**另一位作者的包**占用（那是一个 Web 客户端 + WSL 通知插件，与本项目无关），按名安装会装错。从 v0.2.0 起，包名、插件行 id、GitHub 仓库统一为 **`dsh-session-toast`**。升级步骤：
+>
+> 1. 在 Plugins 里 **Remove** 旧的 `dsh-session-notifier`（包括按名字误装的 npm `1.x`）；
+> 2. 按上面的方式重新安装 `dsh-session-toast`；
+> 3. 点 **Install → Enable now**，并用 `--dump-config` 确认输出里有 `# == dsh-session-toast`。
 
 ## 配置
 
@@ -102,8 +108,8 @@ dsh plugin --profile <profile> add "C:\path\to\dsh-session-notifier"
 插件行的默认配置由 bundle 层提供。要改配置，在 **机器级用户层** `$DSH_HOME/cordis.patch.yml`（本机 `C:\Users\Lenovo\.dsh\cordis.patch.yml`）追加一行整行覆盖，例如：
 
 ```yaml
-- id: dsh-session-notifier
-  name: dsh-session-notifier
+- id: dsh-session-toast
+  name: dsh-session-toast
   config:
     enabled: true
     notifyOn: completed-and-error
@@ -113,7 +119,7 @@ dsh plugin --profile <profile> add "C:\path\to\dsh-session-notifier"
     debounceMs: 800
     notifySubagents: false
     mode: auto
-    logFile: 'C:\Users\Lenovo\.dsh\logs\dsh-session-notifier.log'
+    logFile: 'C:\Users\Lenovo\.dsh\logs\dsh-session-toast.log'
 ```
 
 > 不要在 `~/.dsh/profiles/desktop/` 里手改 `package.json` / `cordis.patch.yml`（桌面 profile 由 Electron 独占管理）。临时调试可用 `dsh --profile <test> --patch <overlay.yml>`。
@@ -140,7 +146,7 @@ DSH session ──turn/start──▶ 记录开始时间，取消待发通知
 | --- | --- |
 | `index.js` | 宿主插件入口：配置、事件监听、去抖、调用通知脚本 |
 | `notify.ps1` | Windows 通知投递：前台检测、WinRT Toast、balloon 兜底、退出码 |
-| `cordis.patch.yml` | 插入插件行（`id: dsh-session-notifier`，`name` 与包名一致） |
+| `cordis.patch.yml` | 插入插件行（`id: dsh-session-toast`，`name` 与包名一致） |
 | `package.json` | `dsh.bundle.patch`、`dsh.compatibility`、`files` 白名单、脚本 |
 | `locale/{zh,en}.json` | Plugins 页标题/描述 |
 | `icon.svg` | 插件图标 |
@@ -174,23 +180,24 @@ mock 覆盖：监听注册、禁用、标题/时长/轮次、去抖取消、子�
 
 ```powershell
 dsh --profile notifier-test --from-default-profile headless --dump-config
-dsh plugin --profile notifier-test add "C:\path\to\dsh-session-notifier"
-dsh --profile notifier-test --dump-config   # 出现 "# == dsh-session-notifier"
-dsh plugin --profile notifier-test remove dsh-session-notifier
+dsh plugin --profile notifier-test add "C:\path\to\dsh-session-toast"
+dsh --profile notifier-test --dump-config   # 出现 "# == dsh-session-toast"
+dsh plugin --profile notifier-test remove dsh-session-toast
 ```
 
 ## 排查
 
 | 现象 | 处理 |
 | --- | --- |
+| 装好了但完全没通知（先查这条） | 确认插件**真的启用了**：`dsh --profile <profile> --dump-config` 的输出里应有 `# == dsh-session-toast` 这一层；桌面端 Plugins 页应显示 Enabled。只在 `package.json` 依赖里、`dsh.profile.bundles` 里没有这一行时，插件不会被加载，也不会产生任何通知 |
 | 完全没通知 | 看 Windows 设置 → 系统 → 通知 是否关闭 / 勿扰；先设 `onlyWhenUnfocused: false`；再设 `logFile` 看 `notify.ps1` 日志 |
 | DSH 在前台时不弹 | 这是默认行为；要始终提示就设 `onlyWhenUnfocused: false` |
 | 来源标签显示 “Windows PowerShell” | Toast 借用的是系统已注册的 PowerShell AUMID；如需自定义，注册 AppUserModelID 后填 `aumid`（非微软文档保证行为） |
 | 子代理任务不弹 | 默认 `notifySubagents: false`；需要时打开（可能一次任务弹多条） |
 | 通知太多 | 调大 `minTurnDurationMs` / `debounceMs`，或 `notifyOn: 'completed'` |
-| 想看插件是否加载 | 启动日志出现 `[dsh-session-notifier] loaded (…)` |
+| 想看插件是否加载 | 启动日志出现 `[dsh-session-toast] loaded (…)` |
 
-调试时设置环境变量 `DSH_SESSION_NOTIFIER_DEBUG=1`，会在 stderr 打印实际 payload 与 PowerShell PID。
+调试时设置环境变量 `DSH_SESSION_TOAST_DEBUG=1`（0.1.x 的 `DSH_SESSION_NOTIFIER_DEBUG=1` 仍兼容）：DSH 控制台会打印每条 `turn/end` 的去向（入队，或被哪条规则跳过）、实际 payload、PowerShell PID，并把 `notify.ps1` 的 `DELIVERED` / `SKIPPED reason=…` 透传出来 —— 这是判断“到底是没加载、被过滤、还是被前台策略跳过”的最快方式。
 
 ## 已知限制
 
@@ -212,13 +219,13 @@ dsh plugin --profile notifier-test remove dsh-session-notifier
 
 ## 卸载
 
-桌面端：**Plugins → dsh-session-notifier → Remove**。
+桌面端：**Plugins → dsh-session-toast → Remove**。
 
 非桌面 profile：
 
 ```powershell
-dsh plugin --profile <profile> remove dsh-session-notifier
-dsh --profile <profile> --dump-config | Select-String "dsh-session-notifier"
+dsh plugin --profile <profile> remove dsh-session-toast
+dsh --profile <profile> --dump-config | Select-String "dsh-session-toast"
 ```
 
 ## License
