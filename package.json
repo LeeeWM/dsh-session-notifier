@@ -15,6 +15,7 @@
     "cordis.patch.yml",
     "locale/*.json",
     "icon.svg",
+    "assets",
     "test/*.mjs",
     "README.md",
     "README.en.md",

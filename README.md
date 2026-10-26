@@ -149,7 +149,7 @@ DSH session ──turn/start──▶ 记录开始时间，取消待发通知
 | `cordis.patch.yml` | 插入插件行（`id: dsh-session-toast`，`name` 与包名一致） |
 | `package.json` | `dsh.bundle.patch`、`dsh.compatibility`、`files` 白名单、脚本 |
 | `locale/{zh,en}.json` | Plugins 页标题/描述 |
-| `icon.svg` | 插件图标 |
+| `icon.svg` / `assets/icon-180.png` | 插件图标（SVG 源文件；180px 位图用于市场卡片） |
 | `test/mock-apply.mjs` | 离线 mock 宿主测试（不弹通知） |
 | `test/live-smoke.mjs` | 真实弹一条通知的联调脚本 |
 | `README.md` / `README.en.md` | 中文 / English 文档 |

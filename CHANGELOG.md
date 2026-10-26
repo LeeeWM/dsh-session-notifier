@@ -28,6 +28,9 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   happens" can be told apart from "plugin never loaded".
 - README troubleshooting: the first check is whether the plugin row actually
   exists in the profile tree (`# == dsh-session-toast` in `--dump-config`).
+- A 180×180 raster icon (`assets/icon-180.png`) rendered from `icon.svg`, for
+  the plugin market's storefront tile (the market only accepts GitHub-hosted
+  bitmaps, not SVG).
 
 ### Fixed
 

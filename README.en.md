@@ -144,7 +144,7 @@ DSH session ──turn/start──▶ remember start time, cancel pending toast
 | `cordis.patch.yml` | Inserts the plugin row (`id: dsh-session-toast`, `name: dsh-session-toast`) |
 | `package.json` | `dsh.bundle.patch`, `dsh.compatibility`, `files` whitelist, scripts |
 | `locale/{zh,en}.json` | Plugins page title/description |
-| `icon.svg` | Plugin icon |
+| `icon.svg` / `assets/icon-180.png` | Plugin icon (SVG source; the 180px bitmap is the storefront tile) |
 | `test/mock-apply.mjs` | Offline mock-host tests (no notification) |
 | `test/live-smoke.mjs` | Manual test that shows one real toast |
 | `README.md` / `README.en.md` | Chinese / English docs |
